@@ -174,6 +174,7 @@ const proxyGroupConfig = [
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png"
   },
+  /**
   {
     ...groupBaseOption,
     "name": "Claude",
@@ -182,7 +183,7 @@ const proxyGroupConfig = [
     "include-all": true,
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://cdn.jsdelivr.net/gh/ke1ewang/Qi@master/Claude.png"
-  },
+  }, 
   {
     ...groupBaseOption,
     "name": "TikTok",
@@ -203,21 +204,31 @@ const proxyGroupConfig = [
   },
   {
     ...groupBaseOption,
-    "name": "Netflix",
-    "type": "select",
-    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
-    "include-all": true,
-    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
-    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
-  },
-  {
-    ...groupBaseOption,
     "name": "Disney",
     "type": "select",
     "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
     "include-all": true,
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Disney.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Emby",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
+  },
+   */
+  {
+    ...groupBaseOption,
+    "name": "Netflix",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
   },
   {
     ...groupBaseOption,
@@ -254,15 +265,6 @@ const proxyGroupConfig = [
     "include-all": true,
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png"
-  },
-  {
-    ...groupBaseOption,
-    "name": "Emby",
-    "type": "select",
-    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
-    "include-all": true,
-    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
-    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
   },
   {
     ...groupBaseOption,
@@ -371,6 +373,14 @@ const ruleProviders = {
     "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/BiliBili/BiliBili.yaml",
     "path": "./ruleset/BiliBili.yaml"
   },
+
+ /**
+  "黑名单": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Clash/Proxy/Proxy.yaml",
+    "path": "./ruleset/Proxy.yaml"
+  },
   "TikTok": {
     ...ruleProviderCommon,
     "behavior": "classical",
@@ -383,17 +393,31 @@ const ruleProviders = {
     "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify.yaml",
     "path": "./ruleset/Spotify.yaml"
   },
-  "Netflix": {
-    ...ruleProviderCommon,
-    "behavior": "classical",
-    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.yaml",
-    "path": "./ruleset/Netflix.yaml"
-  },
   "Disney": {
     ...ruleProviderCommon,
     "behavior": "classical",
     "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Disney/Disney.yaml",
     "path": "./ruleset/Disney.yaml"
+  },
+  "Emby": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Emby/Emby.yaml",
+    "path": "./ruleset/Emby.yaml"
+  },
+  "Claude": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Claude/Claude.yaml",
+    "path": "./ruleset/Claude.yaml"
+  },
+    */
+
+  "Netflix": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.yaml",
+    "path": "./ruleset/Netflix.yaml"
   },
   "Google": {
     ...ruleProviderCommon,
@@ -431,23 +455,11 @@ const ruleProviders = {
     "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OneDrive/OneDrive.yaml",
     "path": "./ruleset/OneDrive.yaml"
   },
-  "Emby": {
-    ...ruleProviderCommon,
-    "behavior": "classical",
-    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Emby/Emby.yaml",
-    "path": "./ruleset/Emby.yaml"
-  },
   "Gemini": {
     ...ruleProviderCommon,
     "behavior": "classical",
     "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Gemini/Gemini.yaml",
     "path": "./ruleset/Gemini.yaml"
-  },
-  "Claude": {
-    ...ruleProviderCommon,
-    "behavior": "classical",
-    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Claude/Claude.yaml",
-    "path": "./ruleset/Claude.yaml"
   },
   "Github": {
     ...ruleProviderCommon,
@@ -460,38 +472,36 @@ const ruleProviders = {
 // 规则
 const rules = [
   // 自定义规则
+  'DOMAIN-KEYWORD,bing,Microsoft',
+  'DOMAIN-KEYWORD,msn,Microsoft',
+  'DOMAIN-KEYWORD,porn,Proxy',
   'GEOIP,private,DIRECT',
   'GEOIP,CN,DIRECT',
-  'DOMAIN-SUFFIX,yunaq.com,DIRECT',
+  'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
   'DOMAIN-SUFFIX,paofu.cloud,Proxy',
   'DOMAIN-SUFFIX,jsdelivr.net,Proxy',
   'DOMAIN-SUFFIX,ezgif.com,Proxy',
   'DOMAIN-SUFFIX,chaturbate.com,Proxy',
-  'DOMAIN-SUFFIX,jiashule.com,DIRECT',
-  'DOMAIN-SUFFIX,linux.do,DIRECT',
-  'DOMAIN-SUFFIX,deepseek.com,DIRECT',
-  'DOMAIN-SUFFIX,volces.com,DIRECT',
-  'DOMAIN-SUFFIX,portal101.cn,DIRECT',
-  'DOMAIN-SUFFIX,ephone.ai,DIRECT',
-  'DOMAIN-SUFFIX,pcbeta.com,DIRECT',
+  'DOMAIN-SUFFIX,linux.do,HK🇭🇰',
   'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
   'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
   "RULE-SET,Telegram,Telegram",
   "RULE-SET,YouTube,YouTube",
   "RULE-SET,BiliBili,BiliBili",
-  "RULE-SET,TikTok,TikTok",
-  "RULE-SET,Spotify,Spotify",
+  //"RULE-SET,TikTok,TikTok",
+  //"RULE-SET,Spotify,Spotify",
   "RULE-SET,Netflix,Netflix",
-  "RULE-SET,Disney,Disney",
+  //"RULE-SET,Disney,Disney",
   "RULE-SET,Google,Google",
   "RULE-SET,OpenAI,OpenAI",
   "RULE-SET,Microsoft,Microsoft",
   "RULE-SET,Twitter,Twitter",
   "RULE-SET,Steam,Steam",
   "RULE-SET,OneDrive,OneDrive",
-  "RULE-SET,Emby,Emby",
+  //"RULE-SET,Emby,Emby",
   "RULE-SET,Gemini,Gemini",
-  "RULE-SET,Claude,Claude",
+  //"RULE-SET,Claude,Claude",
   "RULE-SET,Github,HK🇭🇰",
+  //"RULE-SET,黑名单,Proxy",
   "MATCH,🐟 漏网之鱼"
 ];
