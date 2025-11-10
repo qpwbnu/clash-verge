@@ -472,12 +472,14 @@ const ruleProviders = {
 // 规则
 const rules = [
   // 自定义规则
-  'DOMAIN-KEYWORD,bing,Microsoft',
   'DOMAIN-KEYWORD,msn,Microsoft',
-  'DOMAIN-KEYWORD,porn,Proxy',
+  'DOMAIN-KEYWORD,porn,Proxy',  
+  'DOMAIN-KEYWORD,reddit,Proxy',
   'GEOIP,private,DIRECT',
   'GEOIP,CN,DIRECT',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
+  'DOMAIN-SUFFIX,pinterest.com,Proxy',
+  'DOMAIN-SUFFIX,greasyfork.org,Proxy',
   'DOMAIN-SUFFIX,paofu.cloud,Proxy',
   'DOMAIN-SUFFIX,jsdelivr.net,Proxy',
   'DOMAIN-SUFFIX,ezgif.com,Proxy',
