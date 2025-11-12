@@ -472,11 +472,14 @@ const ruleProviders = {
 // 规则
 const rules = [
   // 自定义规则
+  'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
+  'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
+  'GEOIP,private,DIRECT',
+  'GEOIP,CN,DIRECT',
+  'DOMAIN-KEYWORD,wnacg,Proxy',
   'DOMAIN-KEYWORD,msn,Microsoft',
   'DOMAIN-KEYWORD,porn,Proxy',  
   'DOMAIN-KEYWORD,reddit,Proxy',
-  'GEOIP,private,DIRECT',
-  'GEOIP,CN,DIRECT',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
   'DOMAIN-SUFFIX,pinterest.com,Proxy',
   'DOMAIN-SUFFIX,greasyfork.org,Proxy',
@@ -485,8 +488,6 @@ const rules = [
   'DOMAIN-SUFFIX,ezgif.com,Proxy',
   'DOMAIN-SUFFIX,chaturbate.com,Proxy',
   'DOMAIN-SUFFIX,linux.do,HK🇭🇰',
-  'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
-  'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
   "RULE-SET,Telegram,Telegram",
   "RULE-SET,YouTube,YouTube",
   "RULE-SET,BiliBili,BiliBili",
