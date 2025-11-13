@@ -479,6 +479,7 @@ const rules = [
   'DOMAIN-KEYWORD,wnacg,Proxy',
   'DOMAIN-KEYWORD,msn,Microsoft',
   'DOMAIN-KEYWORD,porn,Proxy',  
+  'DOMAIN-KEYWORD,phncdn,Proxy',
   'DOMAIN-KEYWORD,reddit,Proxy',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
   'DOMAIN-SUFFIX,pinterest.com,Proxy',
