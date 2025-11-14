@@ -482,6 +482,7 @@ const rules = [
   'DOMAIN-KEYWORD,phncdn,Proxy',
   'DOMAIN-KEYWORD,mitce,Proxy',
   'DOMAIN-KEYWORD,reddit,Proxy',
+  'DOMAIN-SUFFIX,wikipedia.org,Proxy',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
   'DOMAIN-SUFFIX,pinterest.com,Proxy',
   'DOMAIN-SUFFIX,greasyfork.org,Proxy',
