@@ -279,7 +279,7 @@ const proxyGroupConfig = [
     ...groupBaseOption,
     "name": "PikPak",
     "type": "select",
-    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "proxies": ["DIRECT", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "Proxy"],
     "include-all": false,
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://siriling.github.io/my-icons/dist/icon/Pikpak.png"
@@ -524,6 +524,13 @@ const rules = [
   'DOMAIN-KEYWORD,phncdn,Proxy',
   'DOMAIN-KEYWORD,mitce,Proxy',
   'DOMAIN-KEYWORD,reddit,Proxy',
+  //PikPak
+  'DOMAIN-KEYWORD,dl-z01a,DIRECT',
+  'DOMAIN,access.mypikpak.com,REJECT',
+  'DOMAIN,access.pikpak.me,REJECT',
+  'DOMAIN,access.mypikpak.net,REJECT',
+  'DOMAIN,access.pikpakdrive.com,REJECT',
+
   'DOMAIN-SUFFIX,wikipedia.org,Proxy',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
   'DOMAIN-SUFFIX,greasyfork.org,Proxy',
