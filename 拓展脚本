@@ -516,6 +516,7 @@ const rules = [
   // 自定义规则
   'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
   'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
+  'DOMAIN-KEYWORD,146.19.24.47,Proxy',
   'DOMAIN-KEYWORD,wnacg,Proxy',
   //'DOMAIN-KEYWORD,bing,Microsoft',
   'DOMAIN-KEYWORD,cloudflare,Proxy',
@@ -524,6 +525,7 @@ const rules = [
   'DOMAIN-KEYWORD,phncdn,Proxy',
   'DOMAIN-KEYWORD,mitce,Proxy',
   'DOMAIN-KEYWORD,reddit,Proxy',
+
   //PikPak
   'DOMAIN-KEYWORD,dl-z01a,DIRECT',
   'DOMAIN,access.mypikpak.com,REJECT',
