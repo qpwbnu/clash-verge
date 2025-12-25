@@ -16,12 +16,23 @@ const proxyProviders = {
   "p1": {
     "type": "http",
     // 订阅 链接
-    "url": "https://app.mitce.net/",
+    "url": "https://update.glados-config.com",
     // 自动更新时间 86400(秒) / 3600 = 24小时
     "interval": 86400,
     "override": {
       // 节点名称前缀 p1，用于区别机场节点
-      "additional-prefix": "M |"
+      //"additional-prefix": "G|"
+    }
+      },
+  "p2": {
+    "type": "http",
+    // 订阅 链接
+    "url": "https://app.mitce.net/?sid=394465&token=srvkncaq",
+    // 自动更新时间 86400(秒) / 3600 = 24小时
+    "interval": 86400,
+    "override": {
+      // 节点名称前缀 p1，用于区别机场节点
+      "additional-prefix": "M|"
     }
   },
 }
@@ -60,7 +71,7 @@ function main(config) {
 // DNS配置
 const dnsConfig = {
   "enable": true,
-  "ipv6": true,
+  "ipv6": false,
   "listen": ":53",
   "prefer-h3": false,
   "respect-rules": true,
@@ -71,8 +82,8 @@ const dnsConfig = {
     "+.lan",
     "+.local",
     // Windows网络出现小地球图标
-    "+.msftconnecttest.com",
-    "+.msftncsi.com",
+    //"+.msftconnecttest.com",
+    //"+.msftncsi.com",
     // QQ快速登录检测失败
     "localhost.ptlogin2.qq.com",
     "localhost.sec.qq.com",
@@ -90,7 +101,7 @@ const dnsConfig = {
 const groupBaseOption = {
   "interval": 240,
   "timeout": 3000,
-  "url": "https://www.gstatic.com/generate_204",
+  "url": "http://cp.cloudflare.com/",
   "max-failed-times": 3,
   "hidden": false
 };
@@ -243,8 +254,9 @@ const proxyGroupConfig = [
     ...groupBaseOption,
     "name": "Google",
     "type": "select",
-    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "proxies": ["Proxy", "JP🇯🇵", "US🇺🇸"],
     "include-all": true,
+    "filter": "日本|JP|🇯🇵|美国|US|🇺🇸",
     "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
     "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
   },
@@ -470,7 +482,7 @@ const ruleProviders = {
   "Xbox": {
     ...ruleProviderCommon,
     "behavior": "classical",
-    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Loon/Xbox/Xbox.list",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Xbox/Xbox.yaml",
     "path": "./ruleset/Xbox.yaml"
   },
   "Twitter": {
@@ -514,10 +526,14 @@ const ruleProviders = {
 // 规则
 const rules = [
   // 自定义规则
-  'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
+  //'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
   'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
   'DOMAIN-KEYWORD,146.19.24.47,Proxy',
   'DOMAIN-KEYWORD,wnacg,Proxy',
+  //coomer相关
+  'DOMAIN-KEYWORD,kemono,Proxy',
+  'DOMAIN-KEYWORD,coomer,Proxy',
+  
   //'DOMAIN-KEYWORD,bing,Microsoft',
   'DOMAIN-KEYWORD,cloudflare,Proxy',
   'DOMAIN-KEYWORD,msn,Microsoft',
@@ -525,13 +541,17 @@ const rules = [
   'DOMAIN-KEYWORD,phncdn,Proxy',
   'DOMAIN-KEYWORD,mitce,Proxy',
   'DOMAIN-KEYWORD,reddit,Proxy',
+  
+  //Xbox
+  'DOMAIN,d1.xboxlive.com,DIRECT',
+  'DOMAIN,assets1.xboxlive.cn,DIRECT',
 
   //PikPak
-  'DOMAIN-KEYWORD,dl-z01a,DIRECT',
   'DOMAIN,access.mypikpak.com,REJECT',
   'DOMAIN,access.pikpak.me,REJECT',
   'DOMAIN,access.mypikpak.net,REJECT',
   'DOMAIN,access.pikpakdrive.com,REJECT',
+  "RULE-SET,PikPak,PikPak",
 
   'DOMAIN-SUFFIX,wikipedia.org,Proxy',
   'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
@@ -542,7 +562,6 @@ const rules = [
   'DOMAIN-SUFFIX,chaturbate.com,Proxy',
   'DOMAIN-SUFFIX,linux.do,HK🇭🇰',
   "RULE-SET,Microsoft,Microsoft",
-  "RULE-SET,PikPak,PikPak",
   "RULE-SET,Bing,Microsoft",
   "RULE-SET,Xbox,Microsoft",
   "RULE-SET,Telegram,Telegram",
