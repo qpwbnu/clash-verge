@@ -27,7 +27,7 @@ const proxyProviders = {
   "p2": {
     "type": "http",
     // 订阅 链接
-    "url": "https://app.mitce.net/?sid=394465&token=srvkncaq",
+    "url": "https://app.mitce.net/",
     // 自动更新时间 86400(秒) / 3600 = 24小时
     "interval": 86400,
     "override": {
