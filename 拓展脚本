@@ -16,7 +16,7 @@ const proxyProviders = {
   "p1": {
     "type": "http",
     // 订阅 链接
-    "url": "https://update.glados-config.com",
+    "url": "https://update.glados-config.com/",
     // 自动更新时间 86400(秒) / 3600 = 24小时
     "interval": 86400,
     "override": {
@@ -52,6 +52,25 @@ function main(config) {
     ...originalProviders,  // 保留原有配置
     ...proxyProviders       // 合并新配置（同名则覆盖）
   };
+
+/**
+  // 添加本地回环地址到DNS劫持过滤
+  if (config["dns"] && config["dns"]["fake-ip-filter"]) {
+    const additionalFilters = [
+      "localhost",
+      "*.localhost",
+      "*.local",
+      "local",
+      "127.0.0.1",
+      "::1"
+    ];
+    config["dns"]["fake-ip-filter"] = [
+      ...additionalFilters,
+      ...config["dns"]["fake-ip-filter"]
+    ];
+  }
+ */
+
   // 覆盖原配置中DNS配置
   config["dns"] = dnsConfig;
   // 覆盖原配置中的代理组
@@ -59,6 +78,21 @@ function main(config) {
   // 覆盖原配置中的规则
   config["rule-providers"] = ruleProviders;
   config["rules"] = rules;
+
+/**  
+  // 确保规则以本地地址直连开始
+  if (Array.isArray(config["rules"])) {
+    const localRules = [
+      "DOMAIN-SUFFIX,localhost,DIRECT",
+      "DOMAIN-SUFFIX,local,DIRECT",
+      "IP-CIDR,127.0.0.0/8,DIRECT",
+      "IP-CIDR,10.0.0.0/8,DIRECT",
+      "IP-CIDR,192.168.0.0/16,DIRECT"
+    ];
+    config["rules"] = [...localRules, ...config["rules"]];
+  }
+*/
+  
   //覆盖通用配置
   config["mixed-port"] = 7897;
   config["allow-lan"] = true;
@@ -81,6 +115,12 @@ const dnsConfig = {
     // 本地主机/设备
     "+.lan",
     "+.local",
+    "localhost",
+    "localhost.localdomain",
+    "*.localhost",
+    "*.localhost.localdomain",
+    "local",
+    "*.local",
     // Windows网络出现小地球图标
     //"+.msftconnecttest.com",
     //"+.msftncsi.com",
@@ -88,10 +128,25 @@ const dnsConfig = {
     "localhost.ptlogin2.qq.com",
     "localhost.sec.qq.com",
     // 微信快速登录检测失败
-    "localhost.work.weixin.qq.com"
+    "localhost.work.weixin.qq.com",
+    // 常见本地回环地址
+    "127.0.0.1",
+    "*.127.0.0.1",
+    "::1",
+    "0.0.0.0",
+    // 本地网络
+    "*.home",
+    "*.internal",
+    "*.intranet",
+    "*.localdomain",
+    "*.test",
+    "*.invalid",
+    // 添加本地服务端口
+    "localhost:8080",
+    "127.0.0.1:8080"
   ],
-  "use-hosts": false,
-  "use-system-hosts": false,
+  "use-hosts": true,  // 改为true，使用本地hosts
+  "use-system-hosts": true,  // 改为true，使用系统hosts
   "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"], // 默认的域名解析服务器
   "default-nameserver": ["tls://223.5.5.5", "tls://119.29.29.29"],  //默认DNS 用于解析 DNS服务器 的域名
   "proxy-server-nameserver": ['https://doh.pub/dns-query'],
@@ -101,7 +156,7 @@ const dnsConfig = {
 const groupBaseOption = {
   "interval": 240,
   "timeout": 3000,
-  "url": "http://cp.cloudflare.com/",
+  "url": "http://www.gstatic.com/generate_204",
   "max-failed-times": 3,
   "hidden": false
 };
@@ -525,11 +580,26 @@ const ruleProviders = {
 
 // 规则
 const rules = [
+  // 本地地址直连（放在最前面）
+  "DOMAIN-SUFFIX,localhost,DIRECT",
+  "DOMAIN-SUFFIX,local,DIRECT",
+  "DOMAIN-SUFFIX,lan,DIRECT",
+  "DOMAIN-SUFFIX,internal,DIRECT",
+  "IP-CIDR,127.0.0.0/8,DIRECT",
+  "IP-CIDR,10.0.0.0/8,DIRECT",
+  "IP-CIDR,172.16.0.0/12,DIRECT",
+  "IP-CIDR,192.168.0.0/16,DIRECT",
+  "IP-CIDR,::1/128,DIRECT",
+  "IP-CIDR,fe80::/10,DIRECT",
+
   // 自定义规则
   //'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
   'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
   'DOMAIN-KEYWORD,146.19.24.47,Proxy',
   'DOMAIN-KEYWORD,wnacg,Proxy',
+  'DOMAIN-KEYWORD,premiumbeat,Proxy',
+  'DOMAIN-KEYWORD,shutterstock,Proxy',
+
   //coomer相关
   'DOMAIN-KEYWORD,kemono,Proxy',
   'DOMAIN-KEYWORD,coomer,Proxy',
@@ -560,6 +630,7 @@ const rules = [
   'DOMAIN-SUFFIX,jsdelivr.net,Proxy',
   'DOMAIN-SUFFIX,ezgif.com,Proxy',
   'DOMAIN-SUFFIX,chaturbate.com,Proxy',
+  'DOMAIN-SUFFIX,eporner.com,Proxy',
   'DOMAIN-SUFFIX,linux.do,HK🇭🇰',
   "RULE-SET,Microsoft,Microsoft",
   "RULE-SET,Bing,Microsoft",
