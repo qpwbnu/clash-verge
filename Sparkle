@@ -1,0 +1,671 @@
+// Define main function (script entry)
+
+/**
+function main(config, profileName) {
+  return config;
+}
+
+/**
+ * 个人备份使用，该脚本适用与Mihomo Party和 Clash Verge Rev
+ * Clash Verge Rev 全局扩展脚本（懒人配置）/ Mihomo Party 覆写脚本
+ * URL: https://github.com/wanswu/my-backup
+ */
+
+// 多订阅合并，这里添加额外的地址
+const proxyProviders = {
+  "p1": {
+    "type": "http",
+    // 订阅 链接
+    "url": "",
+    // 自动更新时间 86400(秒) / 3600 = 24小时
+    "interval": 86400,
+    "override": {
+      // 节点名称前缀 p1，用于区别机场节点
+      //"additional-prefix": "G|"
+    }
+      },
+  "p2": {
+    "type": "http",
+    // 订阅 链接
+    "url": "",
+    // 自动更新时间 86400(秒) / 3600 = 24小时
+    "interval": 86400,
+    "override": {
+      // 节点名称前缀 p1，用于区别机场节点
+      "additional-prefix": "M|"
+    }
+  },
+}
+
+// 程序入口
+function main(config) {
+  const proxyCount = config?.proxies?.length ?? 0;
+  const originalProviders = config?.["proxy-providers"] || {};
+  const proxyProviderCount = typeof originalProviders === "object" ? Object.keys(originalProviders).length : 0;
+
+  if (proxyCount === 0 && proxyProviderCount === 0) {
+    throw new Error("配置文件中未找到任何代理");
+  }
+
+  // 合并而非覆盖
+  config["proxy-providers"] = {
+    ...originalProviders,  // 保留原有配置
+    ...proxyProviders       // 合并新配置（同名则覆盖）
+  };
+
+/**
+  // 添加本地回环地址到DNS劫持过滤
+  if (config["dns"] && config["dns"]["fake-ip-filter"]) {
+    const additionalFilters = [
+      "localhost",
+      "*.localhost",
+      "*.local",
+      "local",
+      "127.0.0.1",
+      "::1"
+    ];
+    config["dns"]["fake-ip-filter"] = [
+      ...additionalFilters,
+      ...config["dns"]["fake-ip-filter"]
+    ];
+  }
+ */
+
+  // 覆盖原配置中DNS配置
+  config["dns"] = dnsConfig;
+  // 覆盖原配置中的代理组
+  config["proxy-groups"] = proxyGroupConfig;
+  // 覆盖原配置中的规则
+  config["rule-providers"] = ruleProviders;
+  config["rules"] = rules;
+
+/**  
+  // 确保规则以本地地址直连开始
+  if (Array.isArray(config["rules"])) {
+    const localRules = [
+      "DOMAIN-SUFFIX,localhost,DIRECT",
+      "DOMAIN-SUFFIX,local,DIRECT",
+      "IP-CIDR,127.0.0.0/8,DIRECT",
+      "IP-CIDR,10.0.0.0/8,DIRECT",
+      "IP-CIDR,192.168.0.0/16,DIRECT"
+    ];
+    config["rules"] = [...localRules, ...config["rules"]];
+  }
+*/
+  
+  //覆盖通用配置
+  config["mixed-port"] = 7897;
+  config["allow-lan"] = true;
+  config["bind-address"] = "*";
+  config["ipv6"] = true;
+  config["unified-delay"] = true;
+  // 返回修改后的配置
+  return config;
+}
+// DNS配置
+const dnsConfig = {
+  "enable": true,
+  "ipv6": false,
+  "listen": ":53",
+  "prefer-h3": false,
+  "respect-rules": true,
+  "enhanced-mode": "fake-ip",
+  "fake-ip-range": "198.18.0.1/16",
+  "fake-ip-filter": [
+    // 本地主机/设备
+    "+.lan",
+    "+.local",
+    "localhost",
+    "localhost.localdomain",
+    "*.localhost",
+    "*.localhost.localdomain",
+    "local",
+    "*.local",
+    // Windows网络出现小地球图标
+    //"+.msftconnecttest.com",
+    //"+.msftncsi.com",
+    // QQ快速登录检测失败
+    "localhost.ptlogin2.qq.com",
+    "localhost.sec.qq.com",
+    // 微信快速登录检测失败
+    "localhost.work.weixin.qq.com",
+    // 常见本地回环地址
+    "127.0.0.1",
+    "*.127.0.0.1",
+    "::1",
+    "0.0.0.0",
+    // 本地网络
+    "*.home",
+    "*.internal",
+    "*.intranet",
+    "*.localdomain",
+    "*.test",
+    "*.invalid",
+    // 添加本地服务端口
+    "localhost:8080",
+    "127.0.0.1:8080"
+  ],
+  "use-hosts": true,  // 改为true，使用本地hosts
+  "use-system-hosts": true,  // 改为true，使用系统hosts
+  "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"], // 默认的域名解析服务器
+  "default-nameserver": ["tls://223.5.5.5", "tls://119.29.29.29"],  //默认DNS 用于解析 DNS服务器 的域名
+  "proxy-server-nameserver": ['https://doh.pub/dns-query'],
+  "direct-nameserver": ['https://doh.pub/dns-query','https://dns.alidns.com/dns-query'],   //用于 direct 出口域名解析的 DNS 服务器
+};
+// 代理组通用配置
+const groupBaseOption = {
+  "interval": 240,
+  "timeout": 3000,
+  "url": "http://www.gstatic.com/generate_204",
+  "max-failed-times": 3,
+  "hidden": false
+};
+// 代理组规则
+const proxyGroupConfig = [
+  {
+    ...groupBaseOption,
+    "name": "Proxy",
+    "type": "select",
+    "proxies": ["AUTO", "负载均衡", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT", "REJECT"],
+    "include-all": true,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "🐟 漏网之鱼",
+    "type": "select",
+    "proxies": ["AUTO", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT", "REJECT"],
+    "include-all": true,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bot.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "AUTO",
+    "type": "url-test",
+    "include-all": true,
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Speedtest.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "负载均衡",
+    "type": "load-balance",
+    "include-all": true,
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Loop.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Pinterest",
+    "type": "select",
+    "proxies": ["Proxy", "US🇺🇸", "TW🥭", "JP🇯🇵", "KR🇰🇷", "HK🇭🇰", "SG🇸🇬", "DIRECT"],
+    "include-all": false,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://s.pinimg.com/images/favicon_red_192.png"
+    //"icon": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/lovable-color.png"
+  }, 
+  {
+    ...groupBaseOption,
+    "name": "Telegram",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT", "REJECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "YouTube",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT", "REJECT"],
+    "include-all": false,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png"
+  },
+
+  {
+    ...groupBaseOption,
+    "name": "Apple",
+    "type": "select",
+    "proxies": ["DIRECT", "Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "REJECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
+  },
+/**
+  {
+    ...groupBaseOption,
+    "name": "Gemini",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "BiliBili",
+    "type": "select",
+    "proxies": ["DIRECT", "Proxy", "REJECT", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "OpenAI",
+    "type": "select",
+    "proxies": ["Proxy", "US🇺🇸", "TW🥭", "JP🇯🇵", "KR🇰🇷", "HK🇭🇰", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "TikTok",
+    "type": "select",
+    "proxies": ["Proxy", "TW🥭", "HK🇭🇰", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Spotify",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Disney",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Disney.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Twitter",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": false,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Emby",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
+  },
+   */
+  {
+    ...groupBaseOption,
+    "name": "Google",
+    "type": "select",
+    "proxies": ["Proxy", "JP🇯🇵", "US🇺🇸"],
+    "include-all": true,
+    "filter": "日本|JP|🇯🇵|美国|US|🇺🇸|gemini",
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "OneDrive",
+    "type": "select",
+    "proxies": ["DIRECT", "Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/OneDrive.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Microsoft",
+    "type": "select",
+    "proxies": ["DIRECT", "Proxy", "REJECT", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Steam",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "DIRECT", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬"],
+    "include-all": false,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "PikPak",
+    "type": "select",
+    "proxies": ["DIRECT", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "Proxy"],
+    "include-all": false,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://siriling.github.io/my-icons/dist/icon/Pikpak.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "Netflix",
+    "type": "select",
+    "proxies": ["Proxy", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "DIRECT"],
+    "include-all": true,
+    "exclude-filter": "(?i)GB|Traffic|Expire|Premium|频道|订阅|ISP|流量|到期|重置",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "HK🇭🇰",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "香港|HK|🇭🇰",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "TW🥭",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "台湾|TW|🇹🇼",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "JP🇯🇵",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "日本|JP|🇯🇵",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "KR🇰🇷",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "韩国|KR|🇰🇷",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "US🇺🇸",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "美国|US|🇺🇸",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "SG🇸🇬",
+    "type": "url-test",
+    "include-all": true,
+    "filter": "新加坡|SG|🇸🇬",
+    "tolerance": 50,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
+  },
+  {
+    ...groupBaseOption,
+    "name": "🎮Game",
+    "type": "select",
+    "proxies": ["DIRECT", "AUTO", "HK🇭🇰", "TW🥭", "JP🇯🇵", "KR🇰🇷", "US🇺🇸", "SG🇸🇬", "REJECT"],
+    "include-all": true,
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
+  }
+];
+
+
+// 规则集通用配置
+const ruleProviderCommon = {
+  "type": "http",
+  "format": "yaml",
+  "interval": 86400,
+  "proxy": "Proxy"
+};
+// 规则集配置
+const ruleProviders = {
+  "Pinterest": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Pinterest/Pinterest.yaml",
+    "path": "./ruleset/Pinterest.yaml"
+  },
+  "Telegram": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.yaml",
+    "path": "./ruleset/Telegram.yaml"
+  },
+  "YouTube": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.yaml",
+    "path": "./ruleset/YouTube.yaml"
+  },
+    "Apple": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Apple/Apple_Classical.yaml",
+    "path": "./ruleset/Apple.yaml"
+  },
+  "BiliBili": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/BiliBili/BiliBili.yaml",
+    "path": "./ruleset/BiliBili.yaml"
+  },
+  "黑名单": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Clash/Proxy/Proxy.yaml",
+    "path": "./ruleset/Proxy.yaml"
+  },
+ /**
+  "TikTok": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml",
+    "path": "./ruleset/TikTok.yaml"
+  },
+  "Spotify": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify.yaml",
+    "path": "./ruleset/Spotify.yaml"
+  },
+  "Disney": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Disney/Disney.yaml",
+    "path": "./ruleset/Disney.yaml"
+  },
+  "Emby": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Emby/Emby.yaml",
+    "path": "./ruleset/Emby.yaml"
+  },
+  "OpenAI": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml",
+    "path": "./ruleset/OpenAI.yaml"
+  },
+      */
+  "海外媒体": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia.yaml",
+    "path": "./ruleset/GlobalMedia.yaml"
+  },
+
+  "Netflix": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.yaml",
+    "path": "./ruleset/Netflix.yaml"
+  },
+  "Google": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.yaml",
+    "path": "./ruleset/Google.yaml"
+  },
+  "Microsoft": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Microsoft/Microsoft.yaml",
+    "path": "./ruleset/Microsoft.yaml"
+  },
+  "Bing": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bing/Bing.yaml",
+    "path": "./ruleset/Bing.yaml"
+  },
+  "Xbox": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Xbox/Xbox.yaml",
+    "path": "./ruleset/Xbox.yaml"
+  },
+  "Twitter": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml",
+    "path": "./ruleset/Twitter.yaml"
+  },
+  "Steam": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Steam/Steam.yaml",
+    "path": "./ruleset/Steam.yaml"
+  },
+  "OneDrive": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OneDrive/OneDrive.yaml",
+    "path": "./ruleset/OneDrive.yaml"
+  },
+  "Gemini": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Gemini/Gemini.yaml",
+    "path": "./ruleset/Gemini.yaml"
+  },
+  "Github": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub_No_Resolve.yaml",
+    "path": "./ruleset/Github.yaml"
+  },
+  "PikPak": {
+    ...ruleProviderCommon,
+    "behavior": "classical",
+    "url": "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/PikPak/PikPak.yaml",
+    "path": "./ruleset/PikPak.yaml"
+  },
+};
+
+// 规则
+const rules = [
+  // 本地地址直连（放在最前面）
+  "DOMAIN-SUFFIX,localhost,DIRECT",
+  "DOMAIN-SUFFIX,local,DIRECT",
+  "DOMAIN-SUFFIX,lan,DIRECT",
+  "DOMAIN-SUFFIX,internal,DIRECT",
+  "IP-CIDR,127.0.0.0/8,DIRECT",
+  "IP-CIDR,10.0.0.0/8,DIRECT",
+  "IP-CIDR,172.16.0.0/12,DIRECT",
+  "IP-CIDR,192.168.0.0/16,DIRECT",
+  "IP-CIDR,::1/128,DIRECT",
+  "IP-CIDR,fe80::/10,DIRECT",
+  "DOMAIN-SUFFIX,xkw.com,DIRECT",
+  "DOMAIN-SUFFIX,zxxk.com,DIRECT",
+  'DOMAIN-KEYWORD,javlibrary,Proxy',
+  
+
+
+  // 自定义规则
+  'SRC-IP-CIDR,192.168.31.4/32,🎮Game',
+  'SRC-IP-CIDR,192.168.2.9/32,🎮Game',
+ 
+  "RULE-SET,Microsoft,Microsoft",
+  "RULE-SET,Bing,Microsoft",
+  "RULE-SET,Xbox,Microsoft",
+  "RULE-SET,Telegram,Telegram",
+  "RULE-SET,Pinterest,Pinterest",
+  "RULE-SET,YouTube,YouTube",
+  //"RULE-SET,TikTok,TikTok",
+  //"RULE-SET,Spotify,Spotify",
+  "RULE-SET,Netflix,Netflix",
+  //"RULE-SET,Disney,Disney",
+  "RULE-SET,Google,Google",
+  "RULE-SET,Gemini,Google",
+  //"RULE-SET,OpenAI,OpenAI",
+  "RULE-SET,Twitter,Proxy",
+  "RULE-SET,Steam,Steam",
+  "RULE-SET,OneDrive,OneDrive",
+  //"RULE-SET,Emby,Emby",
+  //"RULE-SET,Claude,Claude",
+  "RULE-SET,Github,Proxy",
+  "RULE-SET,BiliBili,DIRECT",
+  "RULE-SET,Apple,DIRECT",
+  "RULE-SET,海外媒体,Proxy",
+  "RULE-SET,黑名单,Proxy",
+  'GEOIP,private,DIRECT',
+  'GEOIP,CN,DIRECT',
+
+   'DOMAIN-KEYWORD,146.19.24.47,Proxy',
+  'DOMAIN-KEYWORD,wnacg,Proxy',
+  'DOMAIN-KEYWORD,premiumbeat,Proxy',
+  'DOMAIN-KEYWORD,shutterstock,Proxy',
+
+  //coomer相关
+  'DOMAIN-KEYWORD,kemono,Proxy',
+  'DOMAIN-KEYWORD,coomer,Proxy',
+  
+  //'DOMAIN-KEYWORD,bing,Microsoft',
+  'DOMAIN-KEYWORD,cloudflare,Proxy',
+  'DOMAIN-KEYWORD,msn,Microsoft',
+  'DOMAIN-KEYWORD,porn,Proxy',
+  'DOMAIN-KEYWORD,phncdn,Proxy',
+  'DOMAIN-KEYWORD,mitce,Proxy',
+  'DOMAIN-KEYWORD,reddit,Proxy',
+  'DOMAIN-KEYWORD,eporner,Proxy',
+  'DOMAIN-KEYWORD,indexxx,US🇺🇸',
+  
+  //Xbox
+  'DOMAIN,d1.xboxlive.com,DIRECT',
+  'DOMAIN,assets1.xboxlive.cn,DIRECT',
+
+  //PikPak
+  'DOMAIN,access.mypikpak.com,REJECT',
+  'DOMAIN,access.pikpak.me,REJECT',
+  'DOMAIN,access.mypikpak.net,REJECT',
+  'DOMAIN,access.pikpakdrive.com,REJECT',
+  "RULE-SET,PikPak,PikPak",
+
+  'DOMAIN-SUFFIX,wikipedia.org,Proxy',
+  'DOMAIN-SUFFIX,bt4gprx.com,Proxy',
+  'DOMAIN-SUFFIX,greasyfork.org,Proxy',
+  'DOMAIN-SUFFIX,paofu.cloud,Proxy',
+  'DOMAIN-SUFFIX,jsdelivr.net,Proxy',
+  'DOMAIN-SUFFIX,ezgif.com,Proxy',
+  'DOMAIN-SUFFIX,chaturbate.com,Proxy',
+  'DOMAIN-SUFFIX,eporner.com,Proxy',
+  'DOMAIN-SUFFIX,linux.do,Proxy',
+
+  "MATCH,🐟 漏网之鱼"
+];
